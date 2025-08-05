@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="application/javascript" src="./p5.min.js"></script>
+</head>
+<body>
+	<script type="application/javascript">
+		const start = async () => {
+			let instance = {}
+			const p5Imp = {
+				env: {
+					createCanvas: (width, height) => instance.createCanvas(width, height),
+					background: color => instance.background(color),
+				}
+			}
+			const wasm = await WebAssembly.instantiateStreaming(fetch("./sketch.wasm"), p5Imp);
+			const sketch = pInst => {
+				pInst.setup = wasm.instance.exports.setup
+				pInst.draw = wasm.instance.exports.draw
+				instance = pInst
+			}
+	
+			new p5(sketch)
+		}
+
+		start();
+	</script>
+</body>
+</html>

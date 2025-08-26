@@ -1,6 +1,13 @@
 #include <stdint.h>
 
-void createCanvas(uint32_t width, uint32_t height);
+#define P2D 0
+#define WEBGL 1
+
+typedef float f32_t
+typedef double f64_t
+
+void createCanvas(uint32_t width, uint32_t height, uint32_t context);
+
 void background(uint32_t color);
 void noFill();
 void noStroke();
@@ -10,5 +17,6 @@ void fillrgb(uint32_t r, uint32_t g, uint32_t b);
 
 void stroke();
 void circle(uint32_t x, uint32_t y, uint32_t d);
+void rect(uint32_t x, uint32_t y, uint32_t w, uint32_t h);
 
-float deltaTime();
+f64_t deltaTime();

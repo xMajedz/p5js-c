@@ -2,32 +2,10 @@
 <html>
 <head>
 	<script type="application/javascript" src="./p5.min.js"></script>
-	<script type="application/javascript">
-		const start = async () => {
-			let instance = {}
-			const p5Imp = {
-				env: {
-					createCanvas: (width, height) => instance.createCanvas(width, height),
-					background: color => instance.background(color),
-					noStroke: () => instance.noStroke(),
-					fill: color => instance.fill(color),
-					fillrgb: (r, g, b) => instance.fill(r, g, b),
-					circle: (x, y, d) => instance.circle(x, y, d),
-					deltaTime: () => 0.001*instance.deltaTime,
-				}
-			}
-			const wasm = await WebAssembly.instantiateStreaming(fetch("./sketch.wasm"), p5Imp);
-			const sketch = pInst => {
-				pInst.setup = wasm.instance.exports.setup
-				pInst.draw = wasm.instance.exports.draw
-				instance = pInst
-			}
-	
-			new p5(sketch)
-		}
-	</script>
+	<script type="application/javascript" src="./p5jsc.js"></script>
+	<script type="application/javascript" src="./sketch.js"></script>
 </head>
 <body>
-	<script type="application/javascript">start();</script>
+	<script type="application/javascript">new sketch();</script>
 </body>
 </html>

@@ -13,12 +13,12 @@ void setup()
 	velY = 200;
 	gravity = 1000;
 	radius = 100;
-	createCanvas(canvasW, canvasH);
+	createCanvas(canvasW, canvasH, P2D);
 }
 
 void draw()
 {
-	float dt = deltaTime();
+	f32_t dt = deltaTime();
 
 	velY += gravity * dt;
 

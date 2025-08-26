@@ -18,7 +18,7 @@ example code
 
 void setup() 
 {
-	createCanvas(400, 400);
+	createCanvas(400, 400, P2D);
 }
 
 void draw()

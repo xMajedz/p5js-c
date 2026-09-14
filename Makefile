@@ -1,4 +1,4 @@
-LD_FLAGS=-Wl,--no-entry -Wl,--allow-undefined -Wl,--export=setup -Wl,--export=draw
+LDFLAGS=-Wl,--export=__heap_base -Wl,--export-table -Wl,--entry=main
 
 src/sketch.wasm: src/sketch.c
-	clang --no-standard-libraries --target=wasm32 -I. $(LD_FLAGS) -o $@ $^
+	clang --target=wasm32 -nostdlib -I. $(LDFLAGS) -o $@ $^

@@ -1,67 +1,77 @@
 class p5jsc
 {
-	instance;
+    static instance = null;
 
-	exports;
+    static exports = null;
 
-	sketch(pInst)
-	{
-		pInst.preload = this.exports.preload
-		pInst.setup = this.exports.setup
-		pInst.draw = this.exports.draw
+    static setup = () => new Proxy(new p5jsc, {
+	get: (target, prop) => p5jsc[prop],
+    });
 
-		this.instance = pInst
-	}
+    static async run(path)
+    {
+	const {instance} = await WebAssembly.instantiateStreaming(fetch(path), { p5: p5jsc.setup() });
 
-	env(env)
-	{
-		return new Proxy(env, {
-			get(target, prop, receiver)
-			{
-            			if (env[prop] !== undefined) return env[prop].bind(env)
-  			}
-		})
-	}
+	p5jsc.exports = instance.exports;
 
-	async start()
-	{
-		const {instance} = await WebAssembly.instantiateStreaming(fetch("./sketch.wasm"), { env: this.env(this) });
-		this.exports = instance.exports
-		new p5(this.sketch.bind(this))
-	}
+	p5jsc.exports.main();
+    }
 
-	createCanvas(width, height, context)
-	{
-		this.instance.createCanvas(width, height, context ? "webgl" : "p2d")
-	}
+    static sketch(p5Inst)
+    {
+	p5Inst.setup = this.setup;
+	p5Inst.draw  = this.draw;
 
-	background(color)
-	{
-		this.instance.background(color)
-	}
+	p5jsc.instance = p5Inst;
+    }
 
-	noStroke()
-	{
-		this.instance.noStroke()
-	}
+    static boot(sketch)
+    {
+	const instancePointer = p5jsc.exports.__heap_base;
 
-	fill(color)
-	{
-		this.instance.fill(color)
-	}
+	const function_table = p5jsc.exports.__indirect_function_table;
 
-	fillrgb(r, g, b)
-	{
-		this.instance.fill(r, g, b)
-	}
+	function_table.get(sketch)(instancePointer);
 
-	circle(x, y, d)
-	{
-		this.instance.circle(x, y, d)
-	}
+	const functions = new Uint32Array(p5jsc.exports.memory.buffer, instancePointer, 4);
 
-	deltaTime()
-	{
-		return this.instance.deltaTime * 0.001
-	}
+	const [setup, draw] = functions;
+
+	new p5(p5jsc.sketch.bind({
+	    setup: function_table.get(setup),
+	    draw: function_table.get(draw)
+	}));
+    }
+
+    static createCanvas(width, height, context)
+    {
+	p5jsc.instance.createCanvas(width, height, context ? "webgl" : "p2d")
+    }
+
+    static background(color)
+    {
+	p5jsc.instance.background(color)
+    }
+
+    static noStroke()
+    {
+	p5jsc.instance.noStroke()
+    }
+
+    static fill(color)
+    {
+	p5jsc.instance.fill(color)
+    }
+
+    static fillrgb(r, g, b)
+    {
+	p5jsc.instance.fill(r, g, b)
+    }
+
+    static circle(x, y, d)
+    {
+	p5jsc.instance.circle(x, y, d)
+    }
+
+    static deltaTime = () => p5jsc.instance.deltaTime * 0.001;
 }

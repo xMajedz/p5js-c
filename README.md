@@ -15,7 +15,7 @@ python -m http.server
 ```
 
 example code
-```
+```c
 #include "p5js.h"
 
 void sketch(Instance* instance);
